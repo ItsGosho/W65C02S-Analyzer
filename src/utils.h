@@ -48,6 +48,32 @@ namespace itsgosho {
 
         return result;
     }
+
+    /**
+     * Will read the data from the digital pins and construct a decimal number.
+     * Define the order with the @param bitOrder
+     *
+     * Example:
+     *
+     * Digital Pin(State):
+     * 5(1), 3(0), 6(1), 4(1)
+     *
+     * int pins[4] = {5, 3, 6, 4};
+     * digitalRead(pins, MSB); -> 11 (1011)
+     *
+     * int pins[4] = {5, 3, 6, 4};
+     * digitalRead(pins, LSB); -> 13 (1101)
+     */
+    template<typename T, size_t N>
+    int digitalRead(T (& pinNumbers)[N], const bool& bitOrder = MSBFIRST) {
+
+        switch (bitOrder) {
+            case LSBFIRST:
+                return digitalReadLSB(pinNumbers);
+            case MSBFIRST:
+                return digitalReadMSB(pinNumbers);
+        }
+    }
 }
 
 
