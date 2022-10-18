@@ -75,7 +75,7 @@ namespace itsgosho {
      * digitalRead(pins, LSB); -> 13 (1101)
      */
     template<typename T, size_t N>
-    int digitalRead(T (& pinNumbers)[N], const bool& bitOrder = MSBFIRST) {
+    unsigned long digitalRead(T (& pinNumbers)[N], const bool& bitOrder = MSBFIRST) {
 
         switch (bitOrder) {
             case LSBFIRST:
