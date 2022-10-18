@@ -6,6 +6,16 @@
 namespace itsgosho {
 
     /**
+     * Will set the mode of the provided pins to INPUT or OUTPUT
+     */
+    template<typename T, size_t N>
+    void pinModes(T (& pinNumbers)[N], const byte& mode) {
+        for (size_t i = 0; i < N; i++) {
+            pinMode(pinNumbers[i], mode);
+        }
+    }
+
+    /**
      * Will read the data from the digital pins and construct a decimal number.
      *
      * Example:

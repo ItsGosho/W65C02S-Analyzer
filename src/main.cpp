@@ -35,12 +35,6 @@ using namespace itsgosho;
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
-template<typename T, size_t N>
-void pinModes(T (& pinNumbers)[N], const byte& mode) {
-    for (size_t i = 0; i < N; i++) {
-        pinMode(pinNumbers[i], mode);
-    }
-}
 
 void onClockRisingEdge() {
     Serial.println(digitalReadMSB(mpAddressPins));
