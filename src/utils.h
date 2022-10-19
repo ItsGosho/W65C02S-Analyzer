@@ -27,9 +27,9 @@ namespace itsgosho {
      * digitalRead(pins, MSB); -> 11 (1011)
      */
     template<typename T, size_t N>
-    unsigned long digitalReadMSB(T (& pinNumbers)[N]) {
+    unsigned int digitalReadMSB(T (& pinNumbers)[N]) {
 
-        long result = 0;
+        unsigned int result = 0;
 
         for (int i = 0; i < N; ++i)
             result = (result << 1) | digitalRead(pinNumbers[i]);
@@ -49,9 +49,9 @@ namespace itsgosho {
      * digitalRead(pins, LSB); -> 13 (1101)
      */
     template<typename T, size_t N>
-    unsigned long digitalReadLSB(T (& pinNumbers)[N]) {
+    unsigned int digitalReadLSB(T (& pinNumbers)[N]) {
 
-        unsigned long result = 0;
+        unsigned int result = 0;
 
         for (int i = N - 1; i >= 0; --i)
             result = (result << 1) | digitalRead(pinNumbers[i]);
@@ -75,7 +75,7 @@ namespace itsgosho {
      * digitalRead(pins, LSB); -> 13 (1101)
      */
     template<typename T, size_t N>
-    unsigned long digitalRead(T (& pinNumbers)[N], const bool& bitOrder = MSBFIRST) {
+    unsigned int digitalRead(T (& pinNumbers)[N], const bool& bitOrder = MSBFIRST) {
 
         switch (bitOrder) {
             case LSBFIRST:
