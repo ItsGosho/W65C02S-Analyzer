@@ -37,7 +37,14 @@ int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D
 
 
 void onClockRisingEdge() {
-    Serial.println(digitalReadMSB(mpAddressPins));
+    char output[32];
+
+    bool operation = digitalRead(MP_RWB_PIN);
+    unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
+    unsigned int data = digitalRead(mpDataPins, LSBFIRST);
+
+    sprintf(output, "[%c] Address: %04x Data: %02x", (operation ? 'R' : 'W'), address, data);
+    Serial.println(output);
 }
 
 void setup() {
