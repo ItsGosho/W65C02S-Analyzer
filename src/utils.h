@@ -17,6 +17,7 @@ namespace itsgosho {
 
     /**
      * Will read the data from the digital pins and construct a decimal number.
+     * The first provided pin is the most significant.
      *
      * Example:
      *
@@ -39,6 +40,7 @@ namespace itsgosho {
 
     /**
      * Will read the data from the digital pins and construct a decimal number.
+     * The last provided pin is the most significant.
      *
      * Example:
      *
