@@ -35,6 +35,7 @@ using namespace itsgosho;
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
+volatile uint16_t instructionCounter = 1;
 
 void onClockRisingEdge() {
     char output[32];
@@ -43,8 +44,13 @@ void onClockRisingEdge() {
     unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
     unsigned int data = digitalRead(mpDataPins, LSBFIRST);
 
-    sprintf(output, "[%c] Address: %04x Data: %02x", (operation ? 'R' : 'W'), address, data);
+    if (address == 0xffff)
+        instructionCounter = 1;
+
+    sprintf(output, "%d. [%c] Address: %04x Data: %02x", instructionCounter, (operation ? 'R' : 'W'), address, data);
     Serial.println(output);
+
+    instructionCounter++;
 }
 
 void setup() {
