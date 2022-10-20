@@ -35,6 +35,13 @@ using namespace itsgosho;
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
+/**
+ * Each opcode has unique address.
+ * For example 0xEA - NOP
+ * https://www.westerndesigncenter.com/wdc/documentation/w65c02s.pdf : Page: 22
+ * Some opcodes appear twice. That is because there is different addressing type for each of them. Page: 20
+ * The array is used to visualize what opcode was read from the bus.
+ */
 static char* opCodeNames[0xFF + 1] = {
         /*0*/ "BRK", "ORA", nullptr, nullptr, "TSB", "ORA", "ASL", "RMB0", "PHP", "ORA", "ASL", nullptr, "TSB", "ORA", "ASL", "BBR0",
         /*1*/ "BPL", "ORA", "ORA", nullptr, "TRB", "ORA", "ASL", "RMB1", "CLC", "ORA", "INC", nullptr, "TRB", "ORA", "ASL", "BBR1",
@@ -54,26 +61,35 @@ static char* opCodeNames[0xFF + 1] = {
         /*F*/ "BEQ", "SBC", "SBC", nullptr, nullptr, "SBC", "INC", "SMB7", "SED", "SBC", "PLX", nullptr, nullptr, "SBC", "INC", "BBS7"};
 
 volatile uint16_t instructionCounter = 1;
+volatile bool isResetSequence = false;
 
 void onClockRisingEdge() {
-    char output[50];
+    char output[100];
 
     bool operation = digitalRead(MP_RWB_PIN);
     unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
     unsigned int data = digitalRead(mpDataPins, LSBFIRST);
 
-    if (address == 0xffff)
+    if (address == 0xffff) {
         instructionCounter = 1;
+        isResetSequence = true;
+    }
 
     char* opCodeName = opCodeNames[data];
     sprintf(output,
-            "%d. [%c] Address: %04x Data: %02x [%s]",
+            "%d. [%c] Address: %04x Data: %02x [%s] %s %s",
             instructionCounter,
             (operation ? 'R' : 'W'),
             address,
             data,
-            opCodeName != nullptr ? opCodeName : "Unknown OpCode!");
+            opCodeName != nullptr ? opCodeName : "",
+            isResetSequence ? "[RST]" : "",
+            (address == 0xfffc || address == 0xfffd) ? "[Program Counter]" : "");
     Serial.println(output);
+
+    if(address == 0xfffd) {
+        isResetSequence = false;
+    }
 
     instructionCounter++;
 }
