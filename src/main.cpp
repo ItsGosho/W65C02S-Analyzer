@@ -79,6 +79,9 @@ void onClockRisingEdge() {
         isResetSequence = true;
     }
 
+    if(instructionCounter > 7)
+        isResetSequence = false;
+
     String opCodeName = "[OpCode: " + opCodeNames[data] + "]";
     sprintf(output,
             "%d. [%c] Address: %04x Data: %02x %s %s %s",
@@ -90,10 +93,6 @@ void onClockRisingEdge() {
             isResetSequence ? "[Resetting]" : "",
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
     Serial.println(output);
-
-    if (address == MP_RST_HB_ADDR) {
-        isResetSequence = false;
-    }
 
     instructionCounter++;
 }
