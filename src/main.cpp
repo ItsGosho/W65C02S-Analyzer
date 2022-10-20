@@ -46,23 +46,23 @@ int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D
  * Some opcodes appear twice. That is because there is different addressing type for each of them. Page: 20
  * The array is used to visualize what opcode was read from the bus.
  */
-static char* opCodeNames[0xFF + 1] = {
-        /*0*/ "BRK", "ORA", nullptr, nullptr, "TSB", "ORA", "ASL", "RMB0", "PHP", "ORA", "ASL", nullptr, "TSB", "ORA", "ASL", "BBR0",
-        /*1*/ "BPL", "ORA", "ORA", nullptr, "TRB", "ORA", "ASL", "RMB1", "CLC", "ORA", "INC", nullptr, "TRB", "ORA", "ASL", "BBR1",
-        /*2*/ "JSR", "AND", nullptr, nullptr, "BIT", "AND", "ROL", "RMB2", "PLP", "AND", "ROL", nullptr, "BIT", "AND", "ROL", "BBR2",
-        /*3*/ "BMI", "AND", "AND", nullptr, "BIT", "AND", "ROL", "RMB3", "SEC", "AND", "DEC", nullptr, "BIT", "AND", "ROL", "BBR3",
-        /*4*/ "RTI", "EOR", nullptr, nullptr, nullptr, "EOR", "LSR", "RMB4", "PHA", "EOR", "LSR", nullptr, "JMP", "EOR", "LSR", "BBR4",
-        /*5*/ "BVC", "EOR", "EOR", nullptr, nullptr, "EOR", "LSR", "RMB5", "CLI", "EOR", "PHY", nullptr, nullptr, "EOR", "LSR", "BBR5",
-        /*6*/ "RTS", "ADC", nullptr, nullptr, "STZ", "ADC", "ROR", "RMB6", "PLA", "ADC", "ROR", nullptr, "JMP", "ADC", "ROR", "BBR6",
-        /*7*/ "BVS", "ADC", "ADC", nullptr, "STZ", "ADC", "ROR", "RMB7", "SEI", "ADC", "PLY", nullptr, "JMP", "ADC", "ROR", "BBR7",
-        /*8*/ "BRA", "STA", nullptr, nullptr, "STY", "STA", "STX", "SMB0", "DEY", "BIT", "TXA", nullptr, "STY", "STA", "STX", "BBS0",
-        /*9*/ "BCC", "STA", "STA", nullptr, "STY", "STA", "STX", "SMB1", "TYA", "STA", "TXS", nullptr, "STZ", "STA", "STZ", "BBS1",
-        /*A*/ "LDY", "LDA", "LDX", nullptr, "LDY", "LDA", "LDX", "SMB2", "TAY", "LDA", "TAX", nullptr, "LDY", "LDA", "LDX", "BBS2",
-        /*B*/ "BCS", "LDA", "LDA", nullptr, "LDY", "LDA", "LDX", "SMB3", "CLV", "LDA", "TSX", nullptr, "LDY", "LDA", "LDX", "BBS3",
-        /*C*/ "CPY", "CMP", nullptr, nullptr, "CPY", "CMP", "DEC", "SMB4", "INY", "CMP", "DEX", "WAI", "CPY", "CMP", "DEC", "BBS4",
-        /*D*/ "BNE", "CMP", "CMP", nullptr, nullptr, "CMP", "DEC", "SMB5", "CLD", "CMP", "PHX", "STP", nullptr, "CMP", "DEC", "BBS5",
-        /*E*/ "CPX", "SBC", nullptr, nullptr, "CPX", "SBC", "INC", "SMB6", "INX", "SBC", "NOP", nullptr, "CPX", "SBC", "INC", "BBS6",
-        /*F*/ "BEQ", "SBC", "SBC", nullptr, nullptr, "SBC", "INC", "SMB7", "SED", "SBC", "PLX", nullptr, nullptr, "SBC", "INC", "BBS7"};
+static String opCodeNames[0xFF + 1] = {
+        /*0*/ "BRK", "ORA", "", "", "TSB", "ORA", "ASL", "RMB0", "PHP", "ORA", "ASL", "", "TSB", "ORA", "ASL", "BBR0",
+        /*1*/ "BPL", "ORA", "ORA", "", "TRB", "ORA", "ASL", "RMB1", "CLC", "ORA", "INC", "", "TRB", "ORA", "ASL", "BBR1",
+        /*2*/ "JSR", "AND", "", "", "BIT", "AND", "ROL", "RMB2", "PLP", "AND", "ROL", "", "BIT", "AND", "ROL", "BBR2",
+        /*3*/ "BMI", "AND", "AND", "", "BIT", "AND", "ROL", "RMB3", "SEC", "AND", "DEC", "", "BIT", "AND", "ROL", "BBR3",
+        /*4*/ "RTI", "EOR", "", "", "", "EOR", "LSR", "RMB4", "PHA", "EOR", "LSR", "", "JMP", "EOR", "LSR", "BBR4",
+        /*5*/ "BVC", "EOR", "EOR", "", "", "EOR", "LSR", "RMB5", "CLI", "EOR", "PHY", "", "", "EOR", "LSR", "BBR5",
+        /*6*/ "RTS", "ADC", "", "", "STZ", "ADC", "ROR", "RMB6", "PLA", "ADC", "ROR", "", "JMP", "ADC", "ROR", "BBR6",
+        /*7*/ "BVS", "ADC", "ADC", "", "STZ", "ADC", "ROR", "RMB7", "SEI", "ADC", "PLY", "", "JMP", "ADC", "ROR", "BBR7",
+        /*8*/ "BRA", "STA", "", "", "STY", "STA", "STX", "SMB0", "DEY", "BIT", "TXA", "", "STY", "STA", "STX", "BBS0",
+        /*9*/ "BCC", "STA", "STA", "", "STY", "STA", "STX", "SMB1", "TYA", "STA", "TXS", "", "STZ", "STA", "STZ", "BBS1",
+        /*A*/ "LDY", "LDA", "LDX", "", "LDY", "LDA", "LDX", "SMB2", "TAY", "LDA", "TAX", "", "LDY", "LDA", "LDX", "BBS2",
+        /*B*/ "BCS", "LDA", "LDA", "", "LDY", "LDA", "LDX", "SMB3", "CLV", "LDA", "TSX", "", "LDY", "LDA", "LDX", "BBS3",
+        /*C*/ "CPY", "CMP", "", "", "CPY", "CMP", "DEC", "SMB4", "INY", "CMP", "DEX", "WAI", "CPY", "CMP", "DEC", "BBS4",
+        /*D*/ "BNE", "CMP", "CMP", "", "", "CMP", "DEC", "SMB5", "CLD", "CMP", "PHX", "STP", "", "CMP", "DEC", "BBS5",
+        /*E*/ "CPX", "SBC", "", "", "CPX", "SBC", "INC", "SMB6", "INX", "SBC", "NOP", "", "CPX", "SBC", "INC", "BBS6",
+        /*F*/ "BEQ", "SBC", "SBC", "", "", "SBC", "INC", "SMB7", "SED", "SBC", "PLX", "", "", "SBC", "INC", "BBS7"};
 
 volatile uint16_t instructionCounter = 1;
 volatile bool isResetSequence = false;
@@ -79,19 +79,19 @@ void onClockRisingEdge() {
         isResetSequence = true;
     }
 
-    char* opCodeName = opCodeNames[data];
+    String opCodeName = "[OpCode: " + opCodeNames[data] + "]";
     sprintf(output,
-            "%d. [%c] Address: %04x Data: %02x [%s] %s %s",
+            "%d. [%c] Address: %04x Data: %02x %s %s %s",
             instructionCounter,
             (operation ? 'R' : 'W'),
             address,
             data,
-            opCodeName != nullptr ? opCodeName : "",
-            isResetSequence ? "[RST]" : "",
-            (address == MP_RST_LB_ADDR || address == MP_RST_HB_ADDR) ? "[Program Counter]" : "");
+            !isResetSequence && opCodeName != "" ? opCodeName.begin() : "",
+            isResetSequence ? "[Resetting]" : "",
+            address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
     Serial.println(output);
 
-    if(address == MP_RST_HB_ADDR) {
+    if (address == MP_RST_HB_ADDR) {
         isResetSequence = false;
     }
 
