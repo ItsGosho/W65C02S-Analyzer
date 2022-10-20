@@ -32,6 +32,10 @@ using namespace itsgosho;
 #define MP_D6_PIN 43
 #define MP_D7_PIN 45
 
+#define MP_RST_SEQ_ADDR 0xffff /*Received address indicating a reset sequence*/
+#define MP_RST_LB_ADDR 0xfffc /*Received address indicating low byte  set*/
+#define MP_RST_HB_ADDR 0xfffd /*Received address indicating high byte set*/
+
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
@@ -70,7 +74,7 @@ void onClockRisingEdge() {
     unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
     unsigned int data = digitalRead(mpDataPins, LSBFIRST);
 
-    if (address == 0xffff) {
+    if (address == MP_RST_SEQ_ADDR) {
         instructionCounter = 1;
         isResetSequence = true;
     }
@@ -84,10 +88,10 @@ void onClockRisingEdge() {
             data,
             opCodeName != nullptr ? opCodeName : "",
             isResetSequence ? "[RST]" : "",
-            (address == 0xfffc || address == 0xfffd) ? "[Program Counter]" : "");
+            (address == MP_RST_LB_ADDR || address == MP_RST_HB_ADDR) ? "[Program Counter]" : "");
     Serial.println(output);
 
-    if(address == 0xfffd) {
+    if(address == MP_RST_HB_ADDR) {
         isResetSequence = false;
     }
 
