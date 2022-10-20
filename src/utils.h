@@ -86,6 +86,31 @@ namespace itsgosho {
                 return digitalReadMSB(pinNumbers);
         }
     }
+
+    template<typename T, size_t N>
+    unsigned int digitalRead(T (& pinNumbers)[N], bool (& buffer)[N], const bool& bitOrder = MSBFIRST) {
+
+        switch (bitOrder) {
+            case LSBFIRST:
+                return digitalReadLSB(pinNumbers, buffer);
+            case MSBFIRST:
+                return digitalReadMSB(pinNumbers, buffer);
+        }
+    }
+
+    template<typename T, size_t N>
+    void digitalReadLSB(T (& pinNumbers)[N], bool (& buffer)[N]) {
+
+        for (int i = N - 1; i >= 0; --i)
+            buffer[i] = digitalRead(pinNumbers[i]);
+    }
+
+    template<typename T, size_t N>
+    void digitalReadMSB(T (& pinNumbers)[N], bool (& buffer)[N]) {
+
+        for (int i = 0; i < N; ++i)
+            buffer[i] = digitalRead(pinNumbers[i]);
+    }
 }
 
 
