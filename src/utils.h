@@ -111,6 +111,8 @@ namespace itsgosho {
         for (int i = 0; i < N; ++i)
             buffer[i] = digitalRead(pinNumbers[i]);
     }
+
+
 }
 
 

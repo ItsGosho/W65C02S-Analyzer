@@ -103,6 +103,7 @@ void onClockRisingEdge() {
 
 void setup() {
     Serial.begin(9600);
+    Serial.println("The address and data are displayed in hexadecimal format!");
 
     pinMode(MP_RWB_PIN, INPUT);
     pinMode(MP_CLOCK_PIN, INPUT);
