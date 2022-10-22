@@ -88,7 +88,7 @@ void onClockRisingEdge() {
 
     String opCodeName = "[OpCode: " + opCodeNames[data] + "]";
     sprintf(output,
-            "%d. [%c] (Address: %04x ; %u - Data: %02x ; %u) %s %s %s",
+            "%03u. [%c] (Address: %04x ; %05u - Data: %02x ; %03u) %s %s %s",
             instructionCounter,
             (operation ? 'R' : 'W'),
             address,
