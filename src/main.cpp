@@ -43,6 +43,87 @@ using namespace itsgosho;
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
+enum AddressMode {
+    ABSOLUTE = 0,                          //a
+    ABSOLUTE_INDEXED_INDIRECT = 1,         // (a,x)
+    ABSOLUTE_INDEXED_WITH_X = 2,           //a,x
+    ABSOLUTE_INDEXED_WITH_Y = 3,           //a,y
+    ABSOLUTE_INDIRECT_A = 4,               //(a)
+    ACCUMULATOR = 5,                       //A
+    IMMEDIATE = 6,                         //#
+    IMPLIED = 7,                           //i
+    PROGRAM_COUNTER_RELATIVE = 8,          //r
+    STACK = 9,                             //s
+    ZERO_PAGE = 10,                        //zp
+    ZERO_PAGE_INDEXED_INDIRECT = 11,       //zp,x
+    ZERO_PAGE_INDEXED_WITH_X = 12,         // zp,x
+    ZERO_PAGE_INDEXED_WITH_Y = 13,         // zp,y
+    ZERO_PAGE_INDIRECT = 14,               // (zp)
+    ZERO_PAGE_INDIRECT_INDEXED_WITH_Y = 15 // (zp),y
+};
+
+enum OpCodeType {
+    JSR = 0,
+    LDA = 1,
+    LDX = 2,
+    LDY = 3,
+    LSR = 4,
+    NOP = 5,
+    ORA = 6,
+    PHA = 7,
+    PHP = 8,
+    PHX = 9,
+    PHY = 10,
+    PLA = 11,
+    PLP = 12,
+    PLX = 13,
+    PLY = 14,
+    RMB0 = 15,
+    RMB1 = 16,
+    RMB2 = 17,
+    RMB3 = 18,
+    RMB4 = 19,
+    RMB5 = 20,
+    RMB6 = 21,
+    RMB7 = 22,
+    ROL = 23,
+    ROR = 24,
+    RTI = 25,
+    RTS = 26,
+    SBC = 27,
+    SEC = 28,
+    SED = 29,
+    SEI = 30,
+    SMB0 = 31,
+    SMB1 = 32,
+    SMB2 = 33,
+    SMB3 = 34,
+    SMB4 = 35,
+    SMB5 = 36,
+    SMB6 = 37,
+    SMB7 = 38,
+    STA = 39,
+    STP = 40,
+    STX = 41,
+    STY = 42,
+    STZ = 43,
+    TAX = 44,
+    TAY = 45,
+    TRB = 46,
+    TSB = 47,
+    TSX = 48,
+    TXA = 49,
+    TXS = 50,
+    TYA = 51,
+    WAI = 52
+};
+
+struct OpCode {
+    OpCodeType type;
+    AddressMode addressMode;
+};
+
+
 /**
  * Each opcode has unique address.
  * For example 0xEA - NOP
@@ -67,29 +148,6 @@ static String opCodeNames[0xFF + 1] = {
         /*D*/ "BNE", "CMP", "CMP", "", "", "CMP", "DEC", "SMB5", "CLD", "CMP", "PHX", "STP", "", "CMP", "DEC", "BBS5",
         /*E*/ "CPX", "SBC", "", "", "CPX", "SBC", "INC", "SMB6", "INX", "SBC", "NOP", "", "CPX", "SBC", "INC", "BBS6",
         /*F*/ "BEQ", "SBC", "SBC", "", "", "SBC", "INC", "SMB7", "SED", "SBC", "PLX", "", "", "SBC", "INC", "BBS7"};
-
-enum AddressMode {
-    ABSOLUTE = 0,                          //a
-    ABSOLUTE_INDEXED_INDIRECT = 1,         // (a,x)
-    ABSOLUTE_INDEXED_WITH_X = 2,           //a,x
-    ABSOLUTE_INDEXED_WITH_Y = 3,           //a,y
-    ABSOLUTE_INDIRECT_A = 4,               //(a)
-    ACCUMULATOR = 5,                       //A
-    IMMEDIATE = 6,                         //#
-    IMPLIED = 7,                           //i
-    PROGRAM_COUNTER_RELATIVE = 8,          //r
-    STACK = 9,                             //s
-    ZERO_PAGE = 10,                        //zp
-    ZERO_PAGE_INDEXED_INDIRECT = 11,       //zp,x
-    ZERO_PAGE_INDEXED_WITH_X = 12,         // zp,x
-    ZERO_PAGE_INDEXED_WITH_Y = 13,         // zp,y
-    ZERO_PAGE_INDIRECT = 14,               // (zp)
-    ZERO_PAGE_INDIRECT_INDEXED_WITH_Y = 15 // (zp),y
-};
-
-struct OpCode {
-    String name;
-};
 
 volatile uint16_t instructionCounter = 1;
 volatile bool isResetSequence = false;
