@@ -68,6 +68,29 @@ static String opCodeNames[0xFF + 1] = {
         /*E*/ "CPX", "SBC", "", "", "CPX", "SBC", "INC", "SMB6", "INX", "SBC", "NOP", "", "CPX", "SBC", "INC", "BBS6",
         /*F*/ "BEQ", "SBC", "SBC", "", "", "SBC", "INC", "SMB7", "SED", "SBC", "PLX", "", "", "SBC", "INC", "BBS7"};
 
+enum AddressMode {
+    ABSOLUTE = 0,                          //a
+    ABSOLUTE_INDEXED_INDIRECT = 1,         // (a,x)
+    ABSOLUTE_INDEXED_WITH_X = 2,           //a,x
+    ABSOLUTE_INDEXED_WITH_Y = 3,           //a,y
+    ABSOLUTE_INDIRECT_A = 4,               //(a)
+    ACCUMULATOR = 5,                       //A
+    IMMEDIATE = 6,                         //#
+    IMPLIED = 7,                           //i
+    PROGRAM_COUNTER_RELATIVE = 8,          //r
+    STACK = 9,                             //s
+    ZERO_PAGE = 10,                        //zp
+    ZERO_PAGE_INDEXED_INDIRECT = 11,       //zp,x
+    ZERO_PAGE_INDEXED_WITH_X = 12,         // zp,x
+    ZERO_PAGE_INDEXED_WITH_Y = 13,         // zp,y
+    ZERO_PAGE_INDIRECT = 14,               // (zp)
+    ZERO_PAGE_INDIRECT_INDEXED_WITH_Y = 15 // (zp),y
+};
+
+struct OpCode {
+    String name;
+};
+
 volatile uint16_t instructionCounter = 1;
 volatile bool isResetSequence = false;
 
@@ -83,7 +106,7 @@ void onClockRisingEdge() {
         isResetSequence = true;
     }
 
-    if(instructionCounter > MP_RST_INST_COUNT)
+    if (instructionCounter > MP_RST_INST_COUNT)
         isResetSequence = false;
 
     String opCodeName = "[OpCode: " + opCodeNames[data] + "]";
