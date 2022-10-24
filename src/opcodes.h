@@ -22,6 +22,46 @@ namespace itsgosho {
         ZERO_PAGE_INDIRECT_INDEXED_WITH_Y  // (zp),y
     };
 
+    String getAddressModeDescription(const AddressMode& addressMode) {
+
+        switch (addressMode) {
+            case ABSOLUTE:
+                return "Absolute";
+            case ABSOLUTE_INDEXED_INDIRECT:
+                return "Absolute Indexed Indirect";
+            case ABSOLUTE_INDEXED_WITH_X:
+                return "Absolute Indexed with X";
+            case ABSOLUTE_INDEXED_WITH_Y:
+                return "Absolute Indexed with Y";
+            case ABSOLUTE_INDIRECT:
+                return "Absolute Indirect";
+            case ACCUMULATOR:
+                return "Accumulator";
+            case IMMEDIATE:
+                return "Immediate";
+            case IMPLIED:
+                return "Implied";
+            case PROGRAM_COUNTER_RELATIVE:
+                return "Program Counter Relative";
+            case STACK:
+                return "Stack";
+            case ZERO_PAGE:
+                return "Zero Page";
+            case ZERO_PAGE_INDEXED_INDIRECT:
+                return "Zero Page Indexed Indirect";
+            case ZERO_PAGE_INDEXED_WITH_X:
+                return "Zero Page Indexed with X";
+            case ZERO_PAGE_INDEXED_WITH_Y:
+                return "Zero Page Indexed with Y";
+            case ZERO_PAGE_INDIRECT:
+                return "Zero Page Indirect";
+            case ZERO_PAGE_INDIRECT_INDEXED_WITH_Y:
+                return "Zero Page Indirect Indexed with Y";
+        }
+
+        return "Address Mode Name not implemented!";
+    }
+
     String getAddressModeSymbol(const AddressMode& addressMode) {
         switch (addressMode) {
             case ABSOLUTE:
