@@ -116,4 +116,4 @@ namespace itsgosho {
 }
 
 
-#endif //W65C02S_ANALYZER_UTILS_H
+#endif
