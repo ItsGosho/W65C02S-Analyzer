@@ -63,8 +63,8 @@ void onClockRisingEdge() {
     if (instructionCounter > MP_RST_INST_COUNT)
         isResetSequence = false;
 
-    //String opCodeName = "[OpCode: " + (opCodeAddress.hasOpCode ? "f" : "f") + "]";
-    Serial.println(opCodeAddress.opCode);
+    String opCode = "[" + getOpCodeName(opCodeAddress.opCode) + " ; " + getAddressModeSymbol(opCodeAddress.addressMode) + "]";
+
     sprintf(output,
             "%03u. [%c] (Address: %04x ; %05u - Data: %02x ; %03u) %s %s %s",
             instructionCounter,
@@ -73,7 +73,7 @@ void onClockRisingEdge() {
             address,
             data,
             data,
-            !isResetSequence && opCodeName != "" ? opCodeName.begin() : "",
+            !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
             isResetSequence ? "[Resetting]" : "",
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
     Serial.println(output);
