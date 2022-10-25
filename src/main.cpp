@@ -83,7 +83,7 @@ void loop() {
         return;
 
     if (buf->isFull(buf)) {
-        Serial.println("Your buffer is full. Consider increasing its size, so that it can keep up with the clock!");
+        Serial.println("Can't keep up with the clock! Increase your buffer's size!");
     }
 
     struct MicroprocessorRead microprocessorRead;
