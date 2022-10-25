@@ -94,7 +94,7 @@ String toBinary(T value) {
     return dataBinary;
 }
 
-uint16_t instructionCounter = 1;
+uint16_t lineCounter = 1;
 bool isResetSequence = false;
 
 void loop() {
@@ -113,11 +113,11 @@ void loop() {
     unsigned short int data = microprocessorRead.data;
 
     if (address == MP_RST_SEQ_ADDR) {
-        instructionCounter = 1;
+        lineCounter = 1;
         isResetSequence = true;
     }
 
-    if (instructionCounter > MP_RST_INST_COUNT)
+    if (lineCounter > MP_RST_INST_COUNT)
         isResetSequence = false;
 
     OpCode opCodeAddress = opCodes[data];
@@ -128,7 +128,7 @@ void loop() {
 
     sprintf(output,
             "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
-            instructionCounter,
+            lineCounter,
             (operation ? 'R' : 'W'),
             address,
             address,
@@ -142,5 +142,5 @@ void loop() {
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
     Serial.println(output);
 
-    instructionCounter++;
+    lineCounter++;
 }
