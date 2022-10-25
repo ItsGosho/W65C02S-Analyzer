@@ -53,7 +53,7 @@ void onClockRisingEdge() {
     bool operation = digitalRead(MP_RWB_PIN);
     unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
     unsigned int data = digitalRead(mpDataPins, LSBFIRST);
-    OpCodeAddress opCodeAddress = opCodeAddresses[data];
+    OpCode opCodeAddress = opCodes[data];
 
     if (address == MP_RST_SEQ_ADDR) {
         instructionCounter = 1;
@@ -63,7 +63,7 @@ void onClockRisingEdge() {
     if (instructionCounter > MP_RST_INST_COUNT)
         isResetSequence = false;
 
-    String opCode = "[" + getOpCodeName(opCodeAddress.opCode) + " ; " + getAddressModeSymbol(opCodeAddress.addressMode) + "]";
+    String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
     char addressBinary[sizeof(unsigned long)*8+1];
     char dataBinary[sizeof(unsigned long)*8+1];
     ltoa(address, addressBinary, 2);

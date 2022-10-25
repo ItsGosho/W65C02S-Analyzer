@@ -1,8 +1,8 @@
 #include "opcodes.h"
 
-String itsgosho::getAddressModeDescription(const AddressMode& addressMode) {
+String itsgosho::getAddressingModeDescription(const AddressingMode& addressingMode) {
 
-    switch (addressMode) {
+    switch (addressingMode) {
         case ABSOLUTE:
             return "Absolute";
         case ABSOLUTE_INDEXED_INDIRECT:
@@ -40,8 +40,8 @@ String itsgosho::getAddressModeDescription(const AddressMode& addressMode) {
     return "Address Mode Name not implemented!";
 }
 
-String itsgosho::getAddressModeSymbol(const AddressMode& addressMode) {
-    switch (addressMode) {
+String itsgosho::getAddressingModeSymbol(const AddressingMode& addressingMode) {
+    switch (addressingMode) {
         case ABSOLUTE:
             return "a";
         case ABSOLUTE_INDEXED_INDIRECT:
@@ -76,12 +76,12 @@ String itsgosho::getAddressModeSymbol(const AddressMode& addressMode) {
             return "(zp),y";
     }
 
-    return "Address Mode Symbol not implemented!";
+    return "Addressing Mode Symbol not implemented!";
 }
 
-String itsgosho::getOpCodeName(const OpCode& opCode) {
+String itsgosho::getInstructionName(const Instruction& instruction) {
 
-    switch (opCode) {
+    switch (instruction) {
         case ADC_:
             return "ADC_";
         case AND:
@@ -279,5 +279,5 @@ String itsgosho::getOpCodeName(const OpCode& opCode) {
         case WAI:
             return "WAI";
     }
-    return "Op code name not implemented!";
+    return "Instruction name not implemented!";
 }
