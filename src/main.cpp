@@ -56,9 +56,6 @@ struct MicroprocessorRead {
 
 RingBuf* buf = RingBuf_new(sizeof(struct MicroprocessorRead), MP_READ_BUFF_SIZE);
 
-volatile uint16_t instructionCounter = 1;
-volatile bool isResetSequence = false;
-
 void onClockRisingEdge() {
     bool operation = digitalRead(MP_RWB_PIN);
     unsigned short int address = digitalRead(mpAddressPins, LSBFIRST);
@@ -97,6 +94,9 @@ String toBinary(T value) {
     return dataBinary;
 }
 
+uint16_t instructionCounter = 1;
+bool isResetSequence = false;
+
 void loop() {
 
     if (buf->isEmpty(buf))
@@ -112,10 +112,6 @@ void loop() {
     unsigned short int address = microprocessorRead.address;
     unsigned short int data = microprocessorRead.data;
 
-    toBinary(address);
-
-    OpCode opCodeAddress = opCodes[data];
-
     if (address == MP_RST_SEQ_ADDR) {
         instructionCounter = 1;
         isResetSequence = true;
@@ -123,6 +119,8 @@ void loop() {
 
     if (instructionCounter > MP_RST_INST_COUNT)
         isResetSequence = false;
+
+    OpCode opCodeAddress = opCodes[data];
 
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
 
