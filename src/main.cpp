@@ -80,6 +80,19 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(MP_CLOCK_PIN), onClockRisingEdge, RISING);
 }
 
+/**
+ * Will get the next not proceeded microprocessor read.
+ */
+MicroprocessorRead pullMicroprocessorRead() {
+    struct MicroprocessorRead microprocessorRead{};
+
+    buf->pull(buf, &microprocessorRead);
+
+    return microprocessorRead;
+}
+
+
+
 void loop() {
 
     if (buf->isEmpty(buf))
@@ -89,11 +102,7 @@ void loop() {
         Serial.println("Can't keep up with the clock! Increase your buffer's size from the MP_READ_BUFF_SIZE macro!");
     }
 
-    struct MicroprocessorRead microprocessorRead;
-
-    buf->pull(buf, &microprocessorRead);
-
-    char output[100];
+    MicroprocessorRead microprocessorRead = pullMicroprocessorRead();
 
     bool operation = microprocessorRead.operation;
     unsigned short int address = microprocessorRead.address;
@@ -110,10 +119,12 @@ void loop() {
         isResetSequence = false;
 
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
-    char addressBinary[sizeof(unsigned short) * 8 + 1];
-    char dataBinary[sizeof(unsigned short) * 8 + 1];
+    char addressBinary[sizeof(unsigned short int) * 8 + 1];
+    char dataBinary[sizeof(unsigned short int) * 8 + 1];
     ltoa(address, addressBinary, 2);
     ltoa(data, dataBinary, 2);
+
+    char output[100];
 
     sprintf(output,
             "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
