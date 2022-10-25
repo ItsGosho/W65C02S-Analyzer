@@ -6,6 +6,7 @@
 using namespace itsgosho;
 
 #define BAUD_RATE 9600
+#define MP_READ_BUFF_SIZE 20
 
 #define MP_RWB_PIN 2
 #define MP_CLOCK_PIN 3
@@ -53,7 +54,7 @@ struct MicroprocessorRead {
     unsigned short int data;
 };
 
-RingBuf* buf = RingBuf_new(sizeof(struct MicroprocessorRead), 20);
+RingBuf* buf = RingBuf_new(sizeof(struct MicroprocessorRead), MP_READ_BUFF_SIZE);
 
 volatile uint16_t instructionCounter = 1;
 volatile bool isResetSequence = false;
@@ -85,7 +86,7 @@ void loop() {
         return;
 
     if (buf->isFull(buf)) {
-        Serial.println("Can't keep up with the clock! Increase your buffer's size!");
+        Serial.println("Can't keep up with the clock! Increase your buffer's size from the MP_READ_BUFF_SIZE macro!");
     }
 
     struct MicroprocessorRead microprocessorRead;
