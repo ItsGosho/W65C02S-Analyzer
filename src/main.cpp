@@ -51,8 +51,8 @@ void onClockRisingEdge() {
     char output[100];
 
     bool operation = digitalRead(MP_RWB_PIN);
-    unsigned int address = digitalRead(mpAddressPins, LSBFIRST);
-    unsigned int data = digitalRead(mpDataPins, LSBFIRST);
+    unsigned short address = digitalRead(mpAddressPins, LSBFIRST);
+    unsigned short data = digitalRead(mpDataPins, LSBFIRST);
     OpCode opCodeAddress = opCodes[data];
 
     if (address == MP_RST_SEQ_ADDR) {
@@ -64,8 +64,8 @@ void onClockRisingEdge() {
         isResetSequence = false;
 
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
-    char addressBinary[sizeof(unsigned long) * 8 + 1];
-    char dataBinary[sizeof(unsigned long) * 8 + 1];
+    char addressBinary[sizeof(unsigned short) * 8 + 1];
+    char dataBinary[sizeof(unsigned short) * 8 + 1];
     ltoa(address, addressBinary, 2);
     ltoa(data, dataBinary, 2);
 
@@ -86,6 +86,8 @@ void onClockRisingEdge() {
     Serial.println(output);
 
     instructionCounter++;
+
+    delay(3000);
 }
 
 void setup() {
