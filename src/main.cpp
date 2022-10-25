@@ -5,6 +5,8 @@
 
 using namespace itsgosho;
 
+#define BAUD_RATE 9600
+
 #define MP_RWB_PIN 2
 #define MP_CLOCK_PIN 3
 
@@ -66,7 +68,7 @@ void onClockRisingEdge() {
 }
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(BAUD_RATE);
     Serial.println("The address and data are displayed in hexadecimal ; decimal format!");
 
     pinMode(MP_RWB_PIN, INPUT);
