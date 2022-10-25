@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "utils.h"
 #include "opcodes.h"
+#include "RingBuf.h"
 
 using namespace itsgosho;
 
@@ -44,50 +45,24 @@ using namespace itsgosho;
 int mpAddressPins[16] = {MP_A0_PIN, MP_A1_PIN, MP_A2_PIN, MP_A3_PIN, MP_A4_PIN, MP_A5_PIN, MP_A6_PIN, MP_A7_PIN, MP_A8_PIN, MP_A9_PIN, MP_A10_PIN, MP_A11_PIN, MP_A12_PIN, MP_A13_PIN, MP_A14_PIN, MP_A15_PIN};
 int mpDataPins[8] = {MP_D0_PIN, MP_D1_PIN, MP_D2_PIN, MP_D3_PIN, MP_D4_PIN, MP_D5_PIN, MP_D6_PIN, MP_D7_PIN};
 
+struct MicroprocessorRead {
+    bool operation;
+    unsigned short int address;
+    unsigned short int data;
+};
+
+RingBuf* buf = RingBuf_new(sizeof(struct MicroprocessorRead), 20);
+
 volatile uint16_t instructionCounter = 1;
 volatile bool isResetSequence = false;
 
 void onClockRisingEdge() {
-    char output[100];
-
     bool operation = digitalRead(MP_RWB_PIN);
-    unsigned short address = digitalRead(mpAddressPins, LSBFIRST);
-    unsigned short data = digitalRead(mpDataPins, LSBFIRST);
-    OpCode opCodeAddress = opCodes[data];
+    unsigned short int address = digitalRead(mpAddressPins, LSBFIRST);
+    unsigned short int data = digitalRead(mpDataPins, LSBFIRST);
 
-    if (address == MP_RST_SEQ_ADDR) {
-        instructionCounter = 1;
-        isResetSequence = true;
-    }
-
-    if (instructionCounter > MP_RST_INST_COUNT)
-        isResetSequence = false;
-
-    String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
-    char addressBinary[sizeof(unsigned short) * 8 + 1];
-    char dataBinary[sizeof(unsigned short) * 8 + 1];
-    ltoa(address, addressBinary, 2);
-    ltoa(data, dataBinary, 2);
-
-    sprintf(output,
-            "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
-            instructionCounter,
-            (operation ? 'R' : 'W'),
-            address,
-            address,
-            addressBinary,
-            (operation ? "<-" : "->"),
-            data,
-            data,
-            dataBinary,
-            !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
-            isResetSequence ? "[Resetting]" : "",
-            address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
-    Serial.println(output);
-
-    instructionCounter++;
-
-    delay(3000);
+    MicroprocessorRead microprocessorRead = {operation, address, data};
+    buf->add(buf, &microprocessorRead);
 }
 
 void setup() {
@@ -103,5 +78,55 @@ void setup() {
 }
 
 void loop() {
-// write your code here
+
+    if(buf->isEmpty(buf))
+        return;
+
+    if(buf->isFull(buf)) {
+        Serial.println("Your buffer is full. Consider increasing its size, so that it can keep up with the clock!");
+    }
+
+    struct MicroprocessorRead microprocessorRead;
+
+    while (buf->pull(buf, &microprocessorRead)) {
+        char output[100];
+
+        bool operation = microprocessorRead.operation;
+        unsigned short int address = microprocessorRead.address;
+        unsigned short int data = microprocessorRead.data;
+
+        OpCode opCodeAddress = opCodes[data];
+
+        if (address == MP_RST_SEQ_ADDR) {
+            instructionCounter = 1;
+            isResetSequence = true;
+        }
+
+        if (instructionCounter > MP_RST_INST_COUNT)
+            isResetSequence = false;
+
+        String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
+        char addressBinary[sizeof(unsigned short) * 8 + 1];
+        char dataBinary[sizeof(unsigned short) * 8 + 1];
+        ltoa(address, addressBinary, 2);
+        ltoa(data, dataBinary, 2);
+
+        sprintf(output,
+                "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
+                instructionCounter,
+                (operation ? 'R' : 'W'),
+                address,
+                address,
+                addressBinary,
+                (operation ? "<-" : "->"),
+                data,
+                data,
+                dataBinary,
+                !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
+                isResetSequence ? "[Resetting]" : "",
+                address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
+        Serial.println(output);
+
+        instructionCounter++;
+    }
 }

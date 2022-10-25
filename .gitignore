@@ -35,7 +35,6 @@
 /.pio
 cmake-build-*
 include
-lib
 test
 CMakeListsPrivate.txt
 CMakeLists.txt
