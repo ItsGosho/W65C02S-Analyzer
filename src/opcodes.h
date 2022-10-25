@@ -426,6 +426,10 @@ namespace itsgosho {
     String getAddressingModeSymbol(const AddressingMode& addressingMode);
 
     String getInstructionName(const Instruction& instruction);
+
+    int getOpCodeClockCycles(const OpCode& opCode);
+
+    int getAddressingModeClockCycles(const AddressingMode& addressingMode);
 }
 
 #endif

@@ -281,3 +281,47 @@ String itsgosho::getInstructionName(const Instruction& instruction) {
     }
     return "Instruction name not implemented!";
 }
+
+int itsgosho::getOpCodeClockCycles(const itsgosho::OpCode& opCode) {
+    return getAddressingModeClockCycles(opCode.addressingMode);
+}
+
+int itsgosho::getAddressingModeClockCycles(const itsgosho::AddressingMode& addressingMode) {
+
+    switch (addressingMode) {
+        case ABSOLUTE:
+            return 4;
+        case ABSOLUTE_INDEXED_INDIRECT:
+            return 0;
+        case ABSOLUTE_INDEXED_WITH_X:
+            return 0;
+        case ABSOLUTE_INDEXED_WITH_Y:
+            return 0;
+        case ABSOLUTE_INDIRECT:
+            return 0;
+        case ACCUMULATOR:
+            return 0;
+        case IMMEDIATE:
+            return 2;
+        case IMPLIED:
+            return 2;
+        case PROGRAM_COUNTER_RELATIVE:
+            return 0;
+        case STACK:
+            return 0;
+        case ZERO_PAGE:
+            return 0;
+        case ZERO_PAGE_INDEXED_INDIRECT:
+            return 0;
+        case ZERO_PAGE_INDEXED_WITH_X:
+            return 0;
+        case ZERO_PAGE_INDEXED_WITH_Y:
+            return 0;
+        case ZERO_PAGE_INDIRECT:
+            return 0;
+        case ZERO_PAGE_INDIRECT_INDEXED_WITH_Y:
+            return 0;
+    }
+
+    return 0;
+}
