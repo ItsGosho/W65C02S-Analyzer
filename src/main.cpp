@@ -80,9 +80,6 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(MP_CLOCK_PIN), onClockRisingEdge, RISING);
 }
 
-/**
- * Will get the next not proceeded microprocessor read.
- */
 MicroprocessorRead pullMicroprocessorRead() {
     struct MicroprocessorRead microprocessorRead{};
 
@@ -91,7 +88,14 @@ MicroprocessorRead pullMicroprocessorRead() {
     return microprocessorRead;
 }
 
+template<typename T>
+String toBinary(T value) {
 
+    char dataBinary[sizeof(T) * 8 + 1];
+    ltoa(value, dataBinary, 2);
+
+    return dataBinary;
+}
 
 void loop() {
 
@@ -108,6 +112,8 @@ void loop() {
     unsigned short int address = microprocessorRead.address;
     unsigned short int data = microprocessorRead.data;
 
+    toBinary(address);
+
     OpCode opCodeAddress = opCodes[data];
 
     if (address == MP_RST_SEQ_ADDR) {
@@ -119,10 +125,6 @@ void loop() {
         isResetSequence = false;
 
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
-    char addressBinary[sizeof(unsigned short int) * 8 + 1];
-    char dataBinary[sizeof(unsigned short int) * 8 + 1];
-    ltoa(address, addressBinary, 2);
-    ltoa(data, dataBinary, 2);
 
     char output[100];
 
@@ -132,11 +134,11 @@ void loop() {
             (operation ? 'R' : 'W'),
             address,
             address,
-            addressBinary,
+            toBinary(address).begin(),
             (operation ? "<-" : "->"),
             data,
             data,
-            dataBinary,
+            toBinary(data).begin(),
             !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
             isResetSequence ? "[Resetting]" : "",
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
