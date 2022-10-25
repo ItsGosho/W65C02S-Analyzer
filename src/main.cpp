@@ -85,15 +85,6 @@ MicroprocessorRead pullMicroprocessorRead() {
     return microprocessorRead;
 }
 
-template<typename T>
-String toBinary(T value) {
-
-    char dataBinary[sizeof(T) * 8 + 1];
-    ltoa(value, dataBinary, 2);
-
-    return dataBinary;
-}
-
 uint16_t lineCounter = 1;
 bool isResetSequence = false;
 
@@ -106,7 +97,9 @@ void loop() {
         Serial.println("Can't keep up with the clock! Increase your buffer's size from the MP_READ_BUFF_SIZE macro!");
     }
 
-    MicroprocessorRead microprocessorRead = pullMicroprocessorRead();
+    struct MicroprocessorRead microprocessorRead{};
+
+    buf->pull(buf, &microprocessorRead);
 
     bool operation = microprocessorRead.operation;
     unsigned short int address = microprocessorRead.address;
@@ -121,22 +114,18 @@ void loop() {
         isResetSequence = false;
 
     OpCode opCodeAddress = opCodes[data];
-
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
 
     char output[100];
-
     sprintf(output,
-            "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
+            "%03u. [%c] (Address: %04x ; %05u %s Data: %02x ; %03u) %s %s %s",
             lineCounter,
             (operation ? 'R' : 'W'),
             address,
             address,
-            toBinary(address).begin(),
             (operation ? "<-" : "->"),
             data,
             data,
-            toBinary(data).begin(),
             !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
             isResetSequence ? "[Resetting]" : "",
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
