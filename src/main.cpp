@@ -64,18 +64,19 @@ void onClockRisingEdge() {
         isResetSequence = false;
 
     String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
-    char addressBinary[sizeof(unsigned long)*8+1];
-    char dataBinary[sizeof(unsigned long)*8+1];
+    char addressBinary[sizeof(unsigned long) * 8 + 1];
+    char dataBinary[sizeof(unsigned long) * 8 + 1];
     ltoa(address, addressBinary, 2);
     ltoa(data, dataBinary, 2);
 
     sprintf(output,
-            "%03u. [%c] (Address: %04x ; %05u ; %s - Data: %02x ; %03u ; %s) %s %s %s",
+            "%03u. [%c] (Address: %04x ; %05u ; %s %s Data: %02x ; %03u ; %s) %s %s %s",
             instructionCounter,
             (operation ? 'R' : 'W'),
             address,
             address,
             addressBinary,
+            (operation ? "<-" : "->"),
             data,
             data,
             dataBinary,
