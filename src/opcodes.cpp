@@ -290,7 +290,7 @@ int itsgosho::getAddressingModeClockCycles(const itsgosho::AddressingMode& addre
 
     switch (addressingMode) {
         case ABSOLUTE:
-            return 4;
+            return 3;
         case ABSOLUTE_INDEXED_INDIRECT:
             return 0;
         case ABSOLUTE_INDEXED_WITH_X:

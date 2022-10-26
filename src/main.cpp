@@ -87,6 +87,11 @@ MicroprocessorRead pullMicroprocessorRead() {
 
 uint16_t lineCounter = 1;
 bool isResetSequence = false;
+bool isResetSequencePassed = false;
+int instructionSequenceCounter = 0;
+Instruction currentInstruction;
+AddressingMode currentAddressingMode;
+bool hasCurrentInstruction = false;
 
 void loop() {
 
@@ -110,26 +115,49 @@ void loop() {
         isResetSequence = true;
     }
 
-    if (lineCounter > MP_RST_INST_COUNT)
-        isResetSequence = false;
+    OpCode opCode = opCodes[data];
 
-    OpCode opCodeAddress = opCodes[data];
-    String opCode = "[" + getInstructionName(opCodeAddress.instruction) + " ; " + getAddressingModeSymbol(opCodeAddress.addressingMode) + "]";
+    if (isResetSequencePassed && hasCurrentInstruction && instructionSequenceCounter >= getAddressingModeClockCycles(currentAddressingMode)) {
+        instructionSequenceCounter = 0;
+        hasCurrentInstruction = false;
+    }
+
+    char operationPrint = operation ? 'R' : 'W';
+    int instructionClockCycles = hasCurrentInstruction ? getAddressingModeClockCycles(currentAddressingMode) : getAddressingModeClockCycles(
+            opCode.addressingMode);
+
+    if (isResetSequencePassed && operationPrint == 'R' && instructionClockCycles > 0 && instructionSequenceCounter == 0) {
+        currentInstruction = opCode.instruction;
+        currentAddressingMode = opCode.addressingMode;
+        hasCurrentInstruction = true;
+        instructionSequenceCounter++;
+    } else if (isResetSequencePassed && instructionClockCycles > 0 && instructionSequenceCounter < instructionClockCycles) {
+        instructionSequenceCounter++;
+    }
+
+    String operationDirectionPrint = operation ? "<-" : "->";
+    String opCodePrint = hasCurrentInstruction ? "[" + getInstructionName(currentInstruction) + " ; " + getAddressingModeSymbol(
+            currentAddressingMode) + " ; " + instructionSequenceCounter + "/" + instructionClockCycles + "]" : "";
 
     char output[100];
     sprintf(output,
             "%03u. [%c] (Address: %04x ; %05u %s Data: %02x ; %03u) %s %s %s",
             lineCounter,
-            (operation ? 'R' : 'W'),
+            operationPrint,
             address,
             address,
-            (operation ? "<-" : "->"),
+            operationDirectionPrint.begin(),
             data,
             data,
-            !isResetSequence && opCodeAddress.hasOpCode ? opCode.begin() : "",
+            opCodePrint.begin(),
             isResetSequence ? "[Resetting]" : "",
             address == MP_RST_LB_ADDR ? "[Program Counter: Low Byte]" : (address == MP_RST_HB_ADDR ? "[Program Counter: High Byte]" : ""));
     Serial.println(output);
+
+    if (address == MP_RST_HB_ADDR) {
+        isResetSequence = false;
+        isResetSequencePassed = true;
+    }
 
     lineCounter++;
 }
