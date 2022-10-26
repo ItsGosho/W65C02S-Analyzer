@@ -1,82 +1,43 @@
 #ifndef W65C02S_ANALYZER_INSTRUCTION_TRACKER_H
 #define W65C02S_ANALYZER_INSTRUCTION_TRACKER_H
 
+#include "opcodes.h"
 #include "structures.h"
 #include "macros.h"
 
 using namespace itsgosho;
 
-class InstructionTracker {
+namespace itsgosho {
 
-public:
-    InstructionTracker() {
-        this->instructionSequenceCounter = 0;
-        this->instructionSequencesRequired = 0;
-        this->hasCurrentInstruction = false;
-        this->isResetSequencePassed = false;
-    }
+    class InstructionTracker {
 
-    void read(const MicroprocessorRead& microprocessorRead) {
-        OpCode opCode = opCodes[microprocessorRead.data];
+    public:
+        InstructionTracker();
 
-        if (this->isInstructionEnd()) {
-            this->instructionSequenceCounter = 0;
-            this->instructionSequencesRequired = 0;
-            this->hasCurrentInstruction = false;
-        }
+        void read(const MicroprocessorRead& microprocessorRead);
 
-        if (this->hasCurrentInstruction) {
-            this->instructionSequenceCounter++;
-        }
+        Instruction getCurrentInstruction() const;
 
-        if (this->isInstructionStart(microprocessorRead)) {
-            this->currentInstruction = opCode.instruction;
-            this->currentAddressingMode = opCode.addressingMode;
-            this->hasCurrentInstruction = true;
-            this->instructionSequencesRequired = getAddressingModeClockCycles(opCode.addressingMode);
-            this->instructionSequenceCounter++;
-        }
+        AddressingMode getCurrentAddressingMode() const;
 
-        if (microprocessorRead.address == MP_RST_HB_ADDR) {
-            this->isResetSequencePassed = true;
-        }
-    }
+        int getInstructionSequenceCounter() const;
 
-    Instruction getCurrentInstruction() const {
-        return this->currentInstruction;
-    }
+        int getInstructionSequenceRequired() const;
 
-    AddressingMode getCurrentAddressingMode() const {
-        return this->currentAddressingMode;
-    }
+        bool getHasCurrentInstruction() const;
 
-    int getInstructionSequenceCounter() const {
-        return this->instructionSequenceCounter;
-    }
+    private:
+        Instruction currentInstruction;
+        AddressingMode currentAddressingMode;
+        int instructionSequenceCounter;
+        int instructionSequencesRequired;
+        bool hasCurrentInstruction;
+        bool isResetSequencePassed;
 
-    int getInstructionSequenceRequired() const {
-        return this->instructionSequencesRequired;
-    }
+        bool isInstructionEnd();
 
-    bool getHasCurrentInstruction() const {
-        return this->hasCurrentInstruction;
-    }
-
-private:
-    Instruction currentInstruction;
-    AddressingMode currentAddressingMode;
-    int instructionSequenceCounter;
-    int instructionSequencesRequired;
-    bool hasCurrentInstruction;
-    bool isResetSequencePassed;
-
-    bool isInstructionEnd() {
-        return this->isResetSequencePassed && this->hasCurrentInstruction && this->instructionSequenceCounter >= this->instructionSequencesRequired;
-    }
-
-    bool isInstructionStart(const MicroprocessorRead& microprocessorRead) {
-        return this->isResetSequencePassed && !this->hasCurrentInstruction && microprocessorRead.operation == MP_R;
-    }
-};
+        bool isInstructionStart(const MicroprocessorRead& microprocessorRead);
+    };
+}
 
 #endif
