@@ -8,6 +8,9 @@ using namespace itsgosho;
 #define BAUD_RATE 9600
 #define MP_READ_BUFF_SIZE 20
 
+#define MP_W 0
+#define MP_R 1
+
 #define MP_RWB_PIN 2
 #define MP_CLOCK_PIN 3
 
@@ -126,7 +129,7 @@ void loop() {
     int instructionClockCycles = hasCurrentInstruction ? getAddressingModeClockCycles(currentAddressingMode) : getAddressingModeClockCycles(
             opCode.addressingMode);
 
-    if (isResetSequencePassed && operationPrint == 'R' && instructionClockCycles > 0 && instructionSequenceCounter == 0) {
+    if (isResetSequencePassed && operation == MP_R && instructionClockCycles > 0 && instructionSequenceCounter == 0) {
         currentInstruction = opCode.instruction;
         currentAddressingMode = opCode.addressingMode;
         hasCurrentInstruction = true;
