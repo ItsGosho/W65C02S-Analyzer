@@ -56,9 +56,7 @@ void loop() {
         Serial.println("Can't keep up with the clock! Increase your buffer's size from the MP_READ_BUFF_SIZE macro!");
     }
 
-    struct MicroprocessorRead microprocessorRead{};
-
-    buf->pull(buf, &microprocessorRead);
+     MicroprocessorRead microprocessorRead = pullMicroprocessorRead();
 
     bool operation = microprocessorRead.operation;
     unsigned short int address = microprocessorRead.address;
@@ -71,11 +69,14 @@ void loop() {
 
     instructionTracker.read(microprocessorRead);
 
-    char operationPrint = operation ? 'R' : 'W';
+    String instructionName = getInstructionName(instructionTracker.getCurrentInstruction());
+    String addressingModeSymbol = getAddressingModeSymbol(instructionTracker.getCurrentAddressingMode());
+    int instructionSequenceCounter = instructionTracker.getInstructionSequenceCounter();
+    int instructionSequenceRequired = instructionTracker.getInstructionSequenceRequired();
 
-    String operationDirectionPrint = operation ? "<-" : "->";
-    String opCodePrint = instructionTracker.getHasCurrentInstruction() ? "[" + getInstructionName(instructionTracker.getCurrentInstruction()) + " ; " + getAddressingModeSymbol(
-            instructionTracker.getCurrentAddressingMode()) + " ; " + instructionTracker.getInstructionSequenceCounter() + "/" + instructionTracker.getInstructionSequenceRequired() + "]" : "";
+    char operationPrint = operation ? 'R' : 'W';
+    String operationDirectionPrint = operation ? "<-" : "->";;
+    String opCodePrint = instructionTracker.getHasCurrentInstruction() ? "[" + instructionName + " ; " + addressingModeSymbol + " ; " + instructionSequenceCounter + "/" + instructionSequenceRequired + "]" : "";
 
     char output[100];
     sprintf(output,
