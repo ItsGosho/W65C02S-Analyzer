@@ -44,7 +44,6 @@ MicroprocessorRead pullMicroprocessorRead() {
 
 uint16_t lineCounter = 1;
 bool isResetSequence = false;
-bool isResetSequencePassed = false;
 InstructionTracker instructionTracker{};
 
 void loop() {
@@ -95,7 +94,6 @@ void loop() {
 
     if (address == MP_RST_HB_ADDR) {
         isResetSequence = false;
-        isResetSequencePassed = true;
     }
 
     lineCounter++;
